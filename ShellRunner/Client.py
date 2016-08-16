@@ -27,5 +27,8 @@ class Client:
         pp = pprint.PrettyPrinter(indent=4)
         for command in commands:
             print("{0}: Running Shell: {1}".format(self.host, command))
-            stdin, stdout, stderr = self.__client__.exec_command(command)
-            pp.pprint(stdout.readlines())
+            stdin, stdout, stderr = self.__client__.exec_command(command, bufsize = 2000)
+            status_code = stdout.channel.recv_exit_status()
+            output = stdout.readlines()
+            pp.pprint(output)
+            return status_code, output
