@@ -1,33 +1,25 @@
 from flask import Flask
 from flask import json
 from flask import request
+from flask import Response
 from Client import Client
-from multiprocessing.pool import ThreadPool
 
 app = Flask(__name__)
 
-class CommandResult:
-    def __int__(self, status_code, out_put):
-        self.status_code = status_code
-        self.out_put = out_put
-
-@app('/command')
+@app.route('/command')
 def send_command():
-    json = request.json
-
-    statusCode, output
+    incomingRequest = request.json
+    result = json.dumps(__runCommand__(incomingRequest['command'], incomingRequest['hosts']))
+    return Response(result, status=200, mimetype='application/json')
 
 def __runCommand__(command, hosts):
-    pool = ThreadPool(processes=5)
-    [hosts, lambda a, c: c.move(a.source, a.destination)]
-    async_result = pool.apply_async(foo, ('world', 'foo'))
-    return_val = async_result.get()
+    what =  [execute_command(command, host) for host in hosts]
+    return what
 
-def sendCommand(command, host):
-    client =  Client(json.host, json.urse, json.password )
+
+def execute_command(command, host):
+    client =  Client(host['ip'], host['user'], host['password'] )
     status, stdOut = client.command(command)
-    return CommandResult(status, stdOut)
-
-
-
+    client.close()
+    return {"status_code" : status, "standard_out" : stdOut }
 
