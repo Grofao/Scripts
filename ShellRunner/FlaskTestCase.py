@@ -32,9 +32,13 @@ class FlaskrTestCase(unittest.TestCase):
             "hosts" : [{"ip" : ip, "user" : user, "password" : password}]
         }
 
-    def test_empty_db(self):
+    def test_sending_single_command(self):
         test_request =  self.create_request("echo 'hello'","10.44.19.45", "richard", "password")
         rv = self.app.get('/command', data=json.dumps(test_request), content_type = 'application/json')
+        assert 200 == rv._status_code
+        json_response = json.loads(rv.data)
+        assert "hello\n" == json_response[0]['standard_out'][0]
+        assert 0 == json_response[0]['status_code']
 
 
 
